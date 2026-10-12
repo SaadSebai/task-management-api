@@ -5,7 +5,7 @@ import com.test.task_management_api.model.Task;
 import com.test.task_management_api.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -18,8 +18,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public ArrayList<Integer> getTasks() {
-        return new ArrayList<>();
+    public List<Task> getTasks() {
+        return taskService.getAllTasks();
     }
 
     @PostMapping

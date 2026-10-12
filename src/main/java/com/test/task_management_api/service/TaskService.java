@@ -5,6 +5,8 @@ import com.test.task_management_api.model.Task;
 import com.test.task_management_api.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TaskService {
 
@@ -14,7 +16,11 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
+    }
+
     public Task createTask(TaskDto taskDto) {
-        return taskRepository.save(new Task(taskDto.getTitle(), taskDto.getDescription()));
+        return taskRepository.save(new Task(taskDto.title(), taskDto.description()));
     }
 }
