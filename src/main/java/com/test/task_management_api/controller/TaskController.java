@@ -26,4 +26,9 @@ public class TaskController {
     public Task createTask(@RequestBody TaskDto taskDto) {
         return taskService.createTask(taskDto);
     }
+
+    @PutMapping("/{id}")
+    public Task updateTask(@PathVariable long id, @RequestBody TaskDto taskDto) {
+        return taskService.updateTask(id, taskDto);
+    }
 }

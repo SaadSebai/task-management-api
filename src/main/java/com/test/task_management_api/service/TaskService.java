@@ -3,7 +3,9 @@ package com.test.task_management_api.service;
 import com.test.task_management_api.dto.TaskDto;
 import com.test.task_management_api.model.Task;
 import com.test.task_management_api.repository.TaskRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,5 +24,18 @@ public class TaskService {
 
     public Task createTask(TaskDto taskDto) {
         return taskRepository.save(new Task(taskDto.title(), taskDto.description()));
+    }
+
+    public Task updateTask(long id, TaskDto taskDto) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Task not found with id: " + id
+                ));
+
+        task.setTitle(taskDto.title());
+        task.setDescription(taskDto.description());
+
+        return taskRepository.save(task);
     }
 }
