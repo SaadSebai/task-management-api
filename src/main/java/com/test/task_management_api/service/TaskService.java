@@ -38,4 +38,16 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
+    public Task deleteTask(long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NO_CONTENT,
+                        "Task not found with id: " + id
+                ));
+
+        taskRepository.delete(task);
+
+        return task;
+    }
 }
