@@ -1,6 +1,7 @@
 package com.test.task_management_api.service;
 
 import com.test.task_management_api.dto.TaskDto;
+import com.test.task_management_api.exception.TaskNotFoundException;
 import com.test.task_management_api.model.Task;
 import com.test.task_management_api.repository.TaskRepository;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,7 @@ public class TaskService {
 
     public Page<Task> getAllTasks(Pageable pageable, String search) {
 
-        if (search == null || search.isEmpty()) {
+        if (search == null || search.trim().isEmpty()) {
             return taskRepository.findAll(pageable);
         }
 
@@ -55,9 +56,6 @@ public class TaskService {
 
     private Task findTaskOrThrowNotFound(long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Task not found with id: " + id
-                ));
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 }
