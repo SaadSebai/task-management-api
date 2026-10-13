@@ -1,4 +1,9 @@
 package com.test.task_management_api.dto;
 
-public record TaskDto(String title, String description) {
-}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record TaskDto(
+        @NotBlank @Size(max = 100) String title,
+        @Size(max = 500) String description
+) {}
