@@ -10,8 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -23,8 +21,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public Page<Task> getTasks(Pageable pageable) {
-        return taskService.getAllTasks(pageable);
+    public Page<Task> getTasks(Pageable pageable, @RequestParam(required = false) String search) {
+        return taskService.getAllTasks(pageable, search);
     }
 
     @GetMapping("/{id}")
@@ -43,7 +41,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpEntity<Void> deleteTask(@PathVariable long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable long id) {
         taskService.deleteTask(id);
 
         return ResponseEntity.noContent().build();

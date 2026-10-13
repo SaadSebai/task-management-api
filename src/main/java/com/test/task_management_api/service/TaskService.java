@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @Service
 public class TaskService {
 
@@ -20,8 +18,16 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Page<Task> getAllTasks(Pageable pageable) {
-        return taskRepository.findAll(pageable);
+    public Page<Task> getAllTasks(Pageable pageable, String search) {
+
+        if (search == null || search.isEmpty()) {
+            return taskRepository.findAll(pageable);
+        }
+
+        return taskRepository.findByTitleContainingIgnoreCase(
+                search.trim(),
+                pageable
+        );
     }
 
     public Task getTaskById(long id) {
