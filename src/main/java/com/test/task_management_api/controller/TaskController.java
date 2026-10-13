@@ -4,6 +4,8 @@ import com.test.task_management_api.dto.TaskDto;
 import com.test.task_management_api.model.Task;
 import com.test.task_management_api.service.TaskService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getTasks() {
-        return taskService.getAllTasks();
+    public Page<Task> getTasks(Pageable pageable) {
+        return taskService.getAllTasks(pageable);
     }
 
     @GetMapping("/{id}")
@@ -36,7 +38,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@Valid @PathVariable long id, @RequestBody TaskDto taskDto) {
+    public Task updateTask(@PathVariable long id, @Valid @RequestBody TaskDto taskDto) {
         return taskService.updateTask(id, taskDto);
     }
 
