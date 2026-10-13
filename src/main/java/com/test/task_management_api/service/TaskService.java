@@ -22,16 +22,16 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public Task getTaskById(int id) {
+        return findTaskOrThrowNotFound(id);
+    }
+
     public Task createTask(TaskDto taskDto) {
         return taskRepository.save(new Task(taskDto.title(), taskDto.description()));
     }
 
     public Task updateTask(long id, TaskDto taskDto) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Task not found with id: " + id
-                ));
+        Task task = findTaskOrThrowNotFound(id);
 
         task.setTitle(taskDto.title());
         task.setDescription(taskDto.description());
@@ -40,13 +40,16 @@ public class TaskService {
     }
 
     public void deleteTask(long id) {
-        Task task = taskRepository.findById(id)
+        Task task = findTaskOrThrowNotFound(id);
+
+        taskRepository.delete(task);
+    }
+
+    private Task findTaskOrThrowNotFound(long id) {
+        return taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Task not found with id: " + id
                 ));
-
-        taskRepository.delete(task);
-
     }
 }
