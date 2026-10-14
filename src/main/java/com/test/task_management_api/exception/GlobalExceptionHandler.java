@@ -1,5 +1,7 @@
 package com.test.task_management_api.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -8,11 +10,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ProblemDetail taskNotFoundException(TaskNotFoundException e) {
@@ -23,6 +28,7 @@ public class GlobalExceptionHandler {
         );
 
         problemDetail.setTitle("Task not found");
+        problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
     }
@@ -45,18 +51,22 @@ public class GlobalExceptionHandler {
 
         problemDetail.setTitle("Validation error");
         problemDetail.setProperty("errors", errors);
+        problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail runtimeException(RuntimeException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                e.getMessage()
+
+        logger.error(e.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
 
-        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setTitle("An unexpected error occurred");
+        problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
     }
