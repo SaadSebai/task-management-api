@@ -6,9 +6,7 @@ import com.test.task_management_api.model.Task;
 import com.test.task_management_api.repository.TaskRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class TaskService {

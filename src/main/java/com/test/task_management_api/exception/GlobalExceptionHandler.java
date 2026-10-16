@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail runtimeException(RuntimeException e) {
 
-        logger.error(e.getMessage());
+        logger.error("Unexpected error while processing request", e);
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(
                 HttpStatus.INTERNAL_SERVER_ERROR
