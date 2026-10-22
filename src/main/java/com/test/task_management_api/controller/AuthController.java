@@ -24,4 +24,11 @@ public class AuthController {
 
         return "success";
     }
+
+    @PostMapping("/login")
+    public String login(@RequestBody @Valid UserDto userDto) {
+        userService.login(userDto);
+
+        return "You're logged in";
+    }
 }
