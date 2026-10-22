@@ -33,6 +33,19 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(UsernameDuplicationException.class)
+    public ProblemDetail usernameDuplicationException(UsernameDuplicationException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Duplicate username");
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail methodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, String> errors = e.getBindingResult()

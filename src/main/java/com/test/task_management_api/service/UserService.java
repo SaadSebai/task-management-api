@@ -1,6 +1,7 @@
 package com.test.task_management_api.service;
 
 import com.test.task_management_api.dto.UserDto;
+import com.test.task_management_api.exception.UsernameDuplicationException;
 import com.test.task_management_api.model.User;
 import com.test.task_management_api.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,11 @@ public class UserService {
     }
 
     public void createUser(UserDto userDto) {
+
+        if (userRepository.findByUsername((userDto.username())) != null)
+        {
+            throw new UsernameDuplicationException(userDto.username());
+        }
 
         User user = new User();
         user.setUsername(userDto.username());
