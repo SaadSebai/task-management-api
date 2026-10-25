@@ -28,11 +28,11 @@ public class TaskService {
 
     public Page<Task> getAllTasks(Pageable pageable, String search) {
         if (search == null || search.trim().isEmpty()) {
-            return taskRepository.findByUser(pageable, findUserOrThrowNotFound());
+            return taskRepository.findByUser_Username(pageable, findUsername());
         }
 
-        return taskRepository.findByUserAndTitleContaining(
-                findUserOrThrowNotFound(),
+        return taskRepository.findAllByUser_UsernameAndTitleContainsIgnoreCase(
+                findUsername(),
                 search.trim(),
                 pageable
         );
@@ -43,7 +43,10 @@ public class TaskService {
     }
 
     public Task createTask(TaskDto taskDto) {
-        return taskRepository.save(new Task(taskDto.title(), taskDto.description(), findUserOrThrowNotFound()));
+        User user = userRepository.findByUsername(findUsername())
+                .orElseThrow(UserNoFoundException::new);
+
+        return taskRepository.save(new Task(taskDto.title(), taskDto.description(), user));
     }
 
     public Task updateTask(long id, TaskDto taskDto) {
@@ -68,19 +71,16 @@ public class TaskService {
      * @return User
      */
     private Task findTaskOrThrowNotFound(long id) {
-        return taskRepository.findByIdAndUser(id, findUserOrThrowNotFound())
+        return taskRepository.findByIdAndUser_Username(id, findUsername())
                 .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     /**
-     * Find the auth user.
+     * Get auth Username.
      *
      * @return User
      */
-    private User findUserOrThrowNotFound() {
-        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        return userRepository.findByUsername(username)
-                .orElseThrow(UserNoFoundException::new);
+    private String findUsername() {
+        return Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
     }
 }

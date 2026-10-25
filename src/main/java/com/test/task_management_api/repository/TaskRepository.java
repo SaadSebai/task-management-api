@@ -12,11 +12,11 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Page<Task> findByUserAndTitleContaining(
-            User user, String title, Pageable pageable
+    Page<Task> findAllByUser_UsernameAndTitleContainsIgnoreCase(
+            String Username, String title, Pageable pageable
     );
 
-    Page<Task> findByUser(Pageable pageable, User user);
+    Page<Task> findByUser_Username(Pageable pageable, String username);
 
-    Optional<Task> findByIdAndUser(long id, User userOrThrowNotFound);
+    Optional<Task> findByIdAndUser_Username(long id, String username);
 }
