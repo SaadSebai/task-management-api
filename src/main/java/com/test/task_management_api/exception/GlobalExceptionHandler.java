@@ -96,4 +96,20 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(UserNoFoundException.class)
+    public ProblemDetail userNoFoundException(UserNoFoundException e) {
+
+        logger.error("User not found", e);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("User Not Found");
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
 }

@@ -2,6 +2,7 @@ package com.test.task_management_api.service;
 
 import com.test.task_management_api.dto.TaskDto;
 import com.test.task_management_api.exception.TaskNotFoundException;
+import com.test.task_management_api.exception.UserNoFoundException;
 import com.test.task_management_api.model.Task;
 import com.test.task_management_api.model.User;
 import com.test.task_management_api.repository.TaskRepository;
@@ -26,12 +27,12 @@ public class TaskService {
     }
 
     public Page<Task> getAllTasks(Pageable pageable, String search) {
-
         if (search == null || search.trim().isEmpty()) {
-            return taskRepository.findAll(pageable);
+            return taskRepository.findByUser(pageable, findUserOrThrowNotFound());
         }
 
-        return taskRepository.findByTitleContainingIgnoreCase(
+        return taskRepository.findByUserAndTitleContaining(
+                findUserOrThrowNotFound(),
                 search.trim(),
                 pageable
         );
@@ -42,12 +43,7 @@ public class TaskService {
     }
 
     public Task createTask(TaskDto taskDto) {
-
-        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        Optional<User> user = userRepository.findByUsername(username);
-
-        return taskRepository.save(new Task(taskDto.title(), taskDto.description(), user.orElse(null)));
+        return taskRepository.save(new Task(taskDto.title(), taskDto.description(), findUserOrThrowNotFound()));
     }
 
     public Task updateTask(long id, TaskDto taskDto) {
@@ -65,8 +61,26 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    /**
+     * Find a Task by id, also the task should belong to the auth user.
+     *
+     * @param id long
+     * @return User
+     */
     private Task findTaskOrThrowNotFound(long id) {
-        return taskRepository.findById(id)
+        return taskRepository.findByIdAndUser(id, findUserOrThrowNotFound())
                 .orElseThrow(() -> new TaskNotFoundException(id));
+    }
+
+    /**
+     * Find the auth user.
+     *
+     * @return User
+     */
+    private User findUserOrThrowNotFound() {
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(UserNoFoundException::new);
     }
 }
